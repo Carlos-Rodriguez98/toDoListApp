@@ -1,6 +1,8 @@
+package models
+
 type Usuario struct {
-	ID           uint   `json:"id" gorm:"primaryKey"`
-	name         string `json:"nombreUsuario"`
-	password     string `json:"-"` //This information isn't returned.
-	imagenPerfil string `json:"imagenPerfil"`
+	ID       uint   `json:"id" gorm:"primaryKey"`
+	UserName string `json:"userName"`
+	Password string `json:"-"` //This information isn't returned.
+	Image    string `json:"image"`
 }
