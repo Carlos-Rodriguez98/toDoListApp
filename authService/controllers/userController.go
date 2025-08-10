@@ -21,9 +21,9 @@ func CrearUsuario(c *gin.Context) {
 		image    *multipart.FileHeader `form:"imagen"`
 	}
 
-	//Toma los datos recibidos y los almacena en la estructura y si se genera un error lo retorna como respuesta
-	if error := c.ShouldBind(&userData); error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": error.Error()})
+	//Toma los datos recibidos y los almacena en la estructura y si se genera un err lo retorna como respuesta
+	if err := c.ShouldBind(&userData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -33,7 +33,7 @@ func CrearUsuario(c *gin.Context) {
 		nombreArchivo := fmt.Sprintf("%d_%s", time.Now().Unix(), userData.image.Filename)
 		ruta := fmt.Sprintf("uploads/profileImages/%s", nombreArchivo)
 
-		if error := c.SaveUploadedFile(userData.image, ruta); error != nil {
+		if err := c.SaveUploadedFile(userData.image, ruta); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error guardando imagen"})
 			return
 		}
@@ -41,8 +41,8 @@ func CrearUsuario(c *gin.Context) {
 	}
 
 	//Hash del password y validar que no se tiene un error
-	hashPassword, error := utils.HashPassword(userData.password)
-	if error != nil {
+	hashPassword, err := utils.HashPassword(userData.password)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generando hash de contraseña"})
 		return
 	}
@@ -53,7 +53,7 @@ func CrearUsuario(c *gin.Context) {
 		Image:    rutaImagen,
 	}
 
-	//if error := database.DB.Create(&usuario).Error; error != nill {
+	//if err := database.DB.Create(&usuario).Error; err != nill {
 	//	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creando usuario"})
 	//	return
 	//}
