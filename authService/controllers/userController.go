@@ -1,13 +1,15 @@
-//package controllers
+package controllers
 
 import (
-	"fmt"                      //Para formatear las cadenas
-	"time"                     //Para obtener timestamps
-	"net/http"                 //Para interactuar con servidores web y clientes HTTP
-	"github.com/gin-gonic/gin" //Framework Gin
-	"mime/multipart"           //Para manejo de archivos subidos
+	"fmt"            //Para formatear las cadenas
+	"mime/multipart" //Para manejo de archivos subidos
+	"net/http"       //Para interactuar con servidores web y clientes HTTP
+	"time"           //Para obtener timestamps
 
 	"toDoListApp/authService/models" //Ruta donde se encuentra el modelo del usuario.
+	"toDoListApp/authService/utils"
+
+	"github.com/gin-gonic/gin" //Framework Gin
 )
 
 func CrearUsuario(c *gin.Context) {
@@ -27,21 +29,28 @@ func CrearUsuario(c *gin.Context) {
 
 	//Almacenar imagen si es enviada
 	var rutaImagen string
-	if userData.imagen != nil {
-		nombreArchivo := fmt.Sprintf("%d_%s", time.Now().Unix(), userData.imagen.filename)
+	if userData.image != nil {
+		nombreArchivo := fmt.Sprintf("%d_%s", time.Now().Unix(), userData.image.Filename)
 		ruta := fmt.Sprintf("uploads/profileImages/%s", nombreArchivo)
 
-		if error := c.SaveUploadedFile(userData.imagen, ruta); error != nil {
+		if error := c.SaveUploadedFile(userData.image, ruta); error != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error guardando imagen"})
 			return
 		}
 		rutaImagen = "/" + ruta
 	}
 
+	//Hash del password y validar que no se tiene un error
+	hashPassword, error := utils.HashPassword(userData.password)
+	if error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generando hash de contraseña"})
+		return
+	}
+
 	usuario := models.Usuario{
-		nombre:   userData.nombre,
-		password: HashPassword(userData.password),
-		image:    rutaImagen,
+		UserName: userData.userName,
+		Password: hashPassword,
+		Image:    rutaImagen,
 	}
 
 	if error := database.DB.Create(&usuario).Error; error != nill {
@@ -49,9 +58,9 @@ func CrearUsuario(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http, StatusCreated, gin.H{
+	c.JSON(http.StatusCreated, gin.H{
 		"id":       usuario.ID,
-		"userName": usuario.nombre,
-		"image":    usuario.image,
+		"userName": usuario.UserName,
+		"image":    usuario.Image,
 	})
 }
