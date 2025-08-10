@@ -3,13 +3,14 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
 
 type EnvConfig struct {
-	DBHOST     string
-	DBPORT     int
+	DBHost     string
+	DBPort     int
 	DBUser     string
 	DBPassword string
 	DBName     string
@@ -27,10 +28,16 @@ func LoadEnv() {
 	}
 
 	AppConfig = EnvConfig{
-		DBHOST:     os.Getenv("DB_HOST"),
+		DBHost:     os.Getenv("DB_HOST"),
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
 		ServerPort: os.Getenv("PORT"),
 	}
+
+	dbPort, err := strconv.Atoi(os.Getenv("DB_PORT"))
+	if err != nil {
+		dbPort = 5432 //Valor por defecto
+	}
+	AppConfig.DBPort = dbPort
 }
