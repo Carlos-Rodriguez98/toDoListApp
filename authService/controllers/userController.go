@@ -53,10 +53,10 @@ func CrearUsuario(c *gin.Context) {
 		Image:    rutaImagen,
 	}
 
-	if error := database.DB.Create(&usuario).Error; error != nill {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creando usuario"})
-		return
-	}
+	//if error := database.DB.Create(&usuario).Error; error != nill {
+	//	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creando usuario"})
+	//	return
+	//}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"id":       usuario.ID,
