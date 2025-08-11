@@ -3,20 +3,25 @@ package authService
 import (
 	"log"
 	"toDoListApp/authService/config"
-	"toDoListApp/authService/routes"
+
+	//"toDoListApp/authService/routes"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	//Inicializar configuraciones (DB, Variables de entorno, etc)
-	config.InitConfig()
+	//Inicializar configuraciones
+	//Variables de entorno
+	config.LoadEnv()
+
+	//Conectar a la base de datos usando AppConfig
+	config.ConnectDatabase(config.AppConfig)
 
 	//Inicializar Gin
 	r := gin.Default()
 
 	//Registrar rutas
-	routes.RegisterRoutes(r)
+	//routes.RegisterRoutes(r)
 
 	//Iniciar servidor
 	log.Println("Servidore corriendo en http://localhost:8080")
