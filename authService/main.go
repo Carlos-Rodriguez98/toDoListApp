@@ -15,7 +15,7 @@ func main() {
 	config.LoadEnv()
 
 	//Conectar a la base de datos usando AppConfig
-	config.ConnectDatabase(config.AppConfig)
+	config.ConnectDatabase()
 
 	//Inicializar Gin
 	r := gin.Default()
