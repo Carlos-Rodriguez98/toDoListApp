@@ -1,5 +1,5 @@
 # Etapa de compilación (imagen oficial de GO)
-FROM golang:1.22 AS builder
+FROM golang:1.24.6 AS builder
 
 # Define directorio de trabajo dentro del contenedor
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY . .
 RUN go build -o main .
 
 # Etapa final (Genera imagen ligera para producción)
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 # Define app como directorio de trabajo
 WORKDIR /app
