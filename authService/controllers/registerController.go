@@ -1,66 +1,49 @@
 package controllers
 
 import (
-	"fmt"            //Para formatear las cadenas
-	"mime/multipart" //Para manejo de archivos subidos
-	"net/http"       //Para interactuar con servidores web y clientes HTTP
-	"time"           //Para obtener timestamps
+	"net/http"
+	"toDoListApp/authService/dto"
+	"toDoListApp/authService/services"
 
-	"toDoListApp/authService/models" //Ruta donde se encuentra el modelo del usuario.
-	"toDoListApp/authService/utils"
-
-	"github.com/gin-gonic/gin" //Framework Gin
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func CrearUsuario(c *gin.Context) {
+type UserController struct {
+	RegistrationService *services.RegistrationService
+}
 
-	//Estuctura temporal llamada userData donde se capturan los datos enviados
-	var userData struct {
-		userName string                `form:"userName" binding:"required"`
-		password string                `form:"password" binding:"required"`
-		image    *multipart.FileHeader `form:"imagen"`
+func NewUserController(db *gorm.DB) *UserController {
+	return &UserController{
+		RegistrationService: services.NewRegistrationService(db),
 	}
+}
 
-	//Toma los datos recibidos y los almacena en la estructura y si se genera un err lo retorna como respuesta
-	if err := c.ShouldBind(&userData); err != nil {
+func (ctrl *UserController) RegisterUser(c *gin.Context) {
+	var request dto.UserRegisterRequest
+
+	// Bind datos del formulario (texto)
+	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	//Almacenar imagen si es enviada
-	var rutaImagen string
-	if userData.image != nil {
-		nombreArchivo := fmt.Sprintf("%d_%s", time.Now().Unix(), userData.image.Filename)
-		ruta := fmt.Sprintf("uploads/profileImages/%s", nombreArchivo)
-
-		if err := c.SaveUploadedFile(userData.image, ruta); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error guardando imagen"})
-			return
-		}
-		rutaImagen = "/" + ruta
-	}
-
-	//Hash del password y validar que no se tiene un error
-	hashPassword, err := utils.HashPassword(userData.password)
+	// Obtener archivo de imagen del formulario
+	imageFileHeader, err := c.FormFile("image")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generando hash de contraseña"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error al recibir imagen: " + err.Error()})
 		return
 	}
 
-	usuario := models.Usuario{
-		UserName: userData.userName,
-		Password: hashPassword,
-		Image:    rutaImagen,
+	// Llamar al servicio
+	user, err := ctrl.RegistrationService.RegisterUser(request, imageFileHeader)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
-	//if err := database.DB.Create(&usuario).Error; err != nill {
-	//	c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creando usuario"})
-	//	return
-	//}
-
 	c.JSON(http.StatusCreated, gin.H{
-		"id":       usuario.ID,
-		"userName": usuario.UserName,
-		"image":    usuario.Image,
+		"message": "Usuario registrado con éxito",
+		"user":    user,
 	})
 }
