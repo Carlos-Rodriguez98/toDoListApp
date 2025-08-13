@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"toDoListApp/authService/config"
+	"toDoListApp/authService/routes"
 
 	//"toDoListApp/authService/routes"
 
@@ -21,7 +22,7 @@ func main() {
 	r := gin.Default()
 
 	//Registrar rutas
-	//routes.RegisterRoutes(r)
+	routes.ServiceRoutes(r)
 
 	//Iniciar servidor
 	log.Println("Servidore corriendo en http://localhost:8080")
