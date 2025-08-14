@@ -36,5 +36,5 @@ func SaveProfileImage(file multipart.File, header *multipart.FileHeader) (string
 	}
 
 	//Retornar ruta relativa (Se almacena en BD)
-	return fileName, nil
+	return filePath, nil
 }
