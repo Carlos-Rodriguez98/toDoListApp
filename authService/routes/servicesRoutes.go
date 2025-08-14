@@ -13,4 +13,6 @@ func ServiceRoutes(route *gin.Engine) {
 
 	//Endpoint para registro de usuario
 	route.POST("/usuarios", userController.RegisterUser)
+	//Endpoint para inicio de sesión
+	route.POST("/usuarios/iniciar-sesion", controllers.Login)
 }
