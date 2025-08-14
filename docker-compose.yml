@@ -25,6 +25,8 @@ services:
       - user-database
     ports:
       - "8080:8080"
+    volumes:
+      - ./authService/uploads:/app/uploads
     networks:
       - microservices
 
