@@ -28,9 +28,9 @@ func (s *RegistrationService) RegisterUser(input dto.UserRegisterRequest) (*mode
 
 	// Crear modelo de usuario
 	usuario := models.Usuario{
-		UserName: input.UserName,
-		Password: hashedPassword,
-		Image:    avatar,
+		Username:   input.UserName,
+		Password:   hashedPassword,
+		AvatarPath: avatar,
 	}
 
 	// Guardar usuario en la base de datos

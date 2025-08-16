@@ -10,7 +10,7 @@ import (
 func UserAuthenticator(userName, password string) (string, models.Usuario, error) {
 	//Busqueda del usuario en la BD
 	var user models.Usuario
-	if err := config.DB.Where("user_name = ?", userName).First(&user).Error; err != nil {
+	if err := config.DB.Where("username = ?", userName).First(&user).Error; err != nil {
 		return "", models.Usuario{}, errors.New("usuario incorrecto")
 	}
 
@@ -20,7 +20,7 @@ func UserAuthenticator(userName, password string) (string, models.Usuario, error
 	}
 
 	//Generación de Token
-	token, err := utils.GenerateJWT(user.ID, user.UserName)
+	token, err := utils.GenerateJWT(user.ID, user.Username)
 	if err != nil {
 		return "", models.Usuario{}, errors.New("error durante la generacion del token")
 	}
