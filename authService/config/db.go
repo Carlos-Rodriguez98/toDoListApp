@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"log"
+	"time"
 	"toDoListApp/authService/models"
 
 	"gorm.io/driver/postgres"
@@ -19,16 +20,22 @@ func ConnectDatabase() {
 		AppConfig.DBHost, AppConfig.DBUser, AppConfig.DBPassword, AppConfig.DBName, AppConfig.DBPort,
 	)
 
-	var err error                                           //Declaro variable para captura de errores
-	DB, err = gorm.Open(postgres.Open(DSN), &gorm.Config{}) //Abre la conexión, env.dbURL contiene la información.
-	if err != nil {                                         //Generar un mensaje de error si err es diferente de nUll
-		log.Fatal("Error conectando a la base de datos:", err)
-	}
-	log.Println("Conexión a base de datos exitosa")
+	var err error //Declaro variable para captura de errores
+	//Intento de conexión a la base de datos (hasta 5 intentos cada 2 seg)
+	for i := 1; i <= 5; i++ {
+		DB, err = gorm.Open(postgres.Open(DSN), &gorm.Config{})
+		if err == nil {
+			log.Print("Conexión exitosa a la base de datos")
 
-	//Automigración
-	if err := DB.AutoMigrate(&models.Usuario{}); err != nil {
-		log.Fatal("Error en la migración: ", err)
+			//Ejecución de automigración
+			if err := DB.AutoMigrate(&models.Usuario{}); err != nil {
+				log.Fatal("Error en la migración: ", err)
+			}
+			log.Println("Migración completada")
+			return
+		}
+		log.Printf("Intento %d: error conectando a la base de datos: %v", i, err)
+		time.Sleep(2 * time.Second)
 	}
-	log.Println("Migración completada")
+	log.Fatal("No se pudo conectar a la base de datos después de varios intentos")
 }
