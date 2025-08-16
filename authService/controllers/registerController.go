@@ -23,20 +23,13 @@ func (ctrl *UserController) RegisterUser(c *gin.Context) {
 	var request dto.UserRegisterRequest
 
 	// Bind datos del formulario (texto)
-	if err := c.ShouldBind(&request); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Obtener archivo de imagen del formulario
-	imageFileHeader, err := c.FormFile("image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error al recibir imagen: " + err.Error()})
-		return
-	}
-
 	// Llamar al servicio
-	user, err := ctrl.RegistrationService.RegisterUser(request, imageFileHeader)
+	user, err := ctrl.RegistrationService.RegisterUser(request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
