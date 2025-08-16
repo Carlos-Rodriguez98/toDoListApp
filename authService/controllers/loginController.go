@@ -12,7 +12,7 @@ func Login(c *gin.Context) {
 	var request dto.LoginRequest
 
 	//Validar que se reciban los datos en el body
-	if err := c.ShouldBind(&request); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Debe enviar su nombre de usuario y contraseña",
 		})
