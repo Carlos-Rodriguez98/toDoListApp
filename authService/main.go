@@ -21,6 +21,9 @@ func main() {
 	//Inicializar Gin
 	r := gin.Default()
 
+	//Servir carpeta "static" para datos estáticos
+	r.Static("/static", "./static")
+
 	//Registrar rutas
 	routes.ServiceRoutes(r)
 
