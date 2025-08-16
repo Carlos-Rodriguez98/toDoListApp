@@ -5,8 +5,6 @@ import (
 	"toDoListApp/authService/models"
 	"toDoListApp/authService/utils"
 
-	"mime/multipart"
-
 	"gorm.io/gorm"
 )
 
@@ -18,19 +16,9 @@ func NewRegistrationService(db *gorm.DB) *RegistrationService {
 	return &RegistrationService{DB: db}
 }
 
-func (s *RegistrationService) RegisterUser(input dto.UserRegisterRequest, imageFileHeader *multipart.FileHeader) (*models.Usuario, error) {
-	//Abrir archivo antes de pasarlo a SaveProfileImage
-	file, err := imageFileHeader.Open()
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	// Guardar imagen en el almacenamiento
-	imagePath, err := utils.SaveProfileImage(file, imageFileHeader)
-	if err != nil {
-		return nil, err
-	}
+func (s *RegistrationService) RegisterUser(input dto.UserRegisterRequest) (*models.Usuario, error) {
+	// Definir ruta de imagen por defecto
+	avatar := "/static/avatar.jpg"
 
 	// Hashear la contraseña
 	hashedPassword, err := utils.HashPassword(input.Password)
@@ -42,7 +30,7 @@ func (s *RegistrationService) RegisterUser(input dto.UserRegisterRequest, imageF
 	usuario := models.Usuario{
 		UserName: input.UserName,
 		Password: hashedPassword,
-		Image:    imagePath,
+		Image:    avatar,
 	}
 
 	// Guardar usuario en la base de datos
