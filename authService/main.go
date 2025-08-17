@@ -28,7 +28,7 @@ func main() {
 	routes.ServiceRoutes(r)
 
 	//Iniciar servidor
-	log.Println("Servidore corriendo en http://localhost:8080")
+	log.Println("Servidor corriendo en http://localhost:8080")
 	if error := r.Run(":8080"); error != nil {
 		log.Fatal(error)
 	}
