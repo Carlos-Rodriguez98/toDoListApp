@@ -8,10 +8,10 @@ import (
 
 type Usuario struct {
 	ID         uint           `json:"id" gorm:"primaryKey;autoIncrement"`
-	Username   string         `json:"username" gorm:"unique;not null"`
-	Password   string         `json:"-" gorm:"not null"` //This information isn't returned.
-	AvatarPath string         `json:"avatarPath"`
+	Username   string         `json:"username" gorm:"size:50;unique;not null"`
+	Password   string         `json:"-" gorm:"size:100;not null"` //This information isn't returned.
+	AvatarPath string         `json:"avatarPath" gorm:"size:255;default:'/static/default.jpg'"`
 	CreatedAt  time.Time      `json:"createdAt"`
-	UpdateAt   time.Time      `json:"updateAt"`
-	DeleteAt   gorm.DeletedAt `gorm:"index" json:"-"`
+	UpdatedAt  time.Time      `json:"updatedAt"`
+	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 }
