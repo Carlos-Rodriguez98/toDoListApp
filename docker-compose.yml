@@ -26,7 +26,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./authService/uploads:/app/uploads
+      - ./authService/static:/app/static
     networks:
       - microservices
 
