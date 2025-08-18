@@ -1,39 +1,43 @@
 package main
 
 import (
-    "fmt"
-    "github.com/gin-gonic/gin"
-    "gorm.io/driver/postgres"
-    "gorm.io/gorm"
-	"net/http" 
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
-  host     = "localhost"
-  port     = 5432
-  user     = "admin"
-  password = "admin"
-  dbname   = "mydb"
+	host     = "todolistapp-database"
+	port     = 5432
+	user     = "Admin"
+	password = "Admin"
+	dbname   = "toDoListApp"
 )
 
 type Categoria struct {
-		Id          uint   `json:"id" gorm:"primaryKey;autoIncrement"`
-		Nombre      string `json:"nombre"`
-		Descripcion string `json:"descripcion"`
-		}
+	Id          uint   `json:"id" gorm:"primaryKey;autoIncrement"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
 
+// Fuerza el nombre de la tabla
+func (Categoria) TableName() string {
+	return "categorias"
+}
 
 func main() {
 	r := gin.Default()
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-	
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=America/Bogota", host, port, user, password, dbname)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect to database")
 	}
 	fmt.Println("Connected to the database successfully")
-
 
 	db.AutoMigrate(&Categoria{})
 
@@ -53,25 +57,25 @@ func main() {
 			return
 		}
 
-        if err := db.Create(&newCategory).Error; err != nil {
-            c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-            return
-        }
+		if err := db.Create(&newCategory).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-        c.JSON(http.StatusCreated, gin.H{
-            "message":  "Categoría creada",
-            "category": newCategory,
-        })
+		c.JSON(http.StatusCreated, gin.H{
+			"message":  "Categoría creada",
+			"category": newCategory,
+		})
 
 	})
 
 	r.DELETE("/categorias/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		if err := db.Delete(&Categoria{}, id).Error; err != nil {
-        	c.JSON(http.StatusInternalServerError, gin.H{"error": "Category cannot be deleted"})
-            return
-        }
-        c.JSON(http.StatusOK, gin.H{"message": "Categoría eliminada", "id": id})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Category cannot be deleted"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Categoría eliminada", "id": id})
 	})
 
 	r.Run(":8080")
