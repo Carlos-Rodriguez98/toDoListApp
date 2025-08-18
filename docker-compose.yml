@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  user-database:
+    image: postgres:15
+    container_name: user-database
+    restart: always
+    environment:
+      POSTGRES_USER: Admin
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: userAuth
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - microservices
+
+  auth-service:
+    build: ./authservice
+    container_name: auth-service
+    restart: always
+    environment:
+      - DB_URL="host=user-database user=Admin password=Admin dbname=userAuth port=5432 sslmode=disable"
+    depends_on:
+      - user-database
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./authService/static:/app/static
+    networks:
+      - microservices
+
+volumes:
+  user_data:
+
+networks:
+  microservices:
+    driver: bridge
+    
