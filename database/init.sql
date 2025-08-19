@@ -62,7 +62,8 @@ CREATE TABLE IF NOT EXISTS tareas(
         REFERENCES usuarios(id) ON DELETE CASCADE,
 
     CONSTRAINT fk_tareas_categorias FOREIGN KEY (category_id)
-        REFERENCES categorias (id) ON DELETE CASCADE
+        REFERENCES categorias (id) ON DELETE SET NULL
+        
 );
 
 -- Insertar datos en la tabla de tareas
