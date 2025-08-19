@@ -1,75 +1,192 @@
-# Task Management App
+# To Do List App
 
 ## Introducción
+To Do List App es una aplicación de gestión de tareas moderna y distribuida, construida con una arquitectura de microservicios. La aplicación permite a los usuarios gestionar sus tareas diarias de manera eficiente, organizándolas por categorías y manteniendo un seguimiento de su progreso.
 
-La aplicación Task Management es una plataforma web que permite a los usuarios crear, organizar y hacer seguimiento de sus tareas diarias. Ofrece funcionalidades de gestión de usuarios, categorías y tareas, permitiendo una experiencia completa para la administración personal de pendientes y actividades.
-
-### Características principales
-- **Gestión de usuarios:** Registro, inicio de sesión, carga de imagen de perfil (opcional) y asignación de avatar por defecto.
-- **Gestión de categorías:** Crear, ver, actualizar y eliminar categorías para organizar las tareas.
-- **Gestión de tareas:** Crear tareas asociadas a categorías, ver y filtrar tareas por categoría y estado, actualizar detalles de tareas (descripción, estado, fecha tentativa de finalización) y eliminar tareas.
+## Características Principales
+- Sistema de autenticación y registro de usuarios
+- Perfiles de usuario con avatares personalizables
+- Organización de tareas por categorías
+- Gestión completa de tareas (crear, editar, eliminar, marcar como completadas)
+- Interfaz de usuario moderna y responsiva
+- Arquitectura de microservicios
+- Seguridad mediante tokens JWT
+- Containerización con Docker para fácil despliegue
 
 ## Arquitectura
-![Vista de componentes](docs/artifacts/components_vw.png)
 
-La arquitectura de la aplicación está compuesta por tres componentes principales:
+### Vista de Componentes
+![Vista de Componentes](docs/artifacts/components-vw.png "Vista de Componentes")
 
-1. **REST API (Golang):** Encargada de la lógica de negocio y la gestión de peticiones HTTP.
-2. **Base de datos (PostgreSQL):** Almacena la información de usuarios, categorías y tareas.
-3. **Interfaz web (HTML, CSS, JavaScript):** Permite la interacción del usuario con la aplicación de manera amigable.
+**Componentes y responsabilidades**:
 
-El flujo general es el siguiente:
-- El usuario interactúa con la interfaz web.
-- Las acciones del usuario generan peticiones HTTP a la API REST.
-- La API procesa la lógica de negocio y consulta o actualiza la base de datos según corresponda.
-- La respuesta es enviada de vuelta a la interfaz web para su visualización.
+* **Frontend (HTML/CSS/JavaScript)**
 
+  * Renderiza la UI (listas de tareas/categorías, formularios de login/registro).
+  * Llama a los microservicios vía **HTTP/JSON**.
+  * Gestiona el token JWT en el navegador (localStorage o cookies seguras).
+  * Aplica filtros de tareas (por estado/categoría) a partir de datos de la API.
+
+* **Auth Service (Go)**
+
+  * **Controllers**: exponen endpoints `/usuarios` (registro), `/usuarios/iniciar-sesion` (login).
+  * **Logic/Utils**: hashing de contraseñas (bcrypt), emisión/verificación de **JWT**, validaciones, manejo de avatar (subida y asignación de avatar por defecto).
+  * Persiste y consulta usuarios en la base de datos.
+
+* **Category Service (Go)**
+
+  * **Controllers**: CRUD de categorías (`/categorias`).
+  * Valida datos (nombre requerido, unicidad si se define), y verifica JWT si el acceso es autenticado.
+  * Lee/escribe categorías en la base de datos.
+
+* **Task Service (Go)**
+
+  * **Controllers**: CRUD de tareas (`/tareas`) y lecturas filtradas (`/tareas/usuario?categoria=...&status=...`).
+  * **Logic**: reglas de negocio (solo ver/editar tareas propias, transición de estados `NOT_STARTED → STARTED → COMPLETED`, validación de fechas).
+  * Persiste y consulta tareas en la base de datos.
+
+* **PostgreSQL**
+
+  * Almacena **usuarios, categorías y tareas**.
+  * Los servicios acceden mediante consultas parametrizadas (evitando inyección SQL).
+  * Índices para acelerar búsquedas por `user_id` y `category_id`.
+
+**Flujo de trabajo**
+
+1. **Registro**: Web App → Auth Service (`POST /usuarios`, opcional imagen). Auth Service guarda usuario y avatar (o asigna uno por defecto).
+2. **Login**: Web App → Auth Service (`POST /usuarios/iniciar-sesion`). Devuelve **JWT**.
+3. **Navegación**:
+
+   * Categorías: Web App → Category Service (`GET /categorias`).
+   * Tareas del usuario: Web App → Task Service (`GET /tareas/usuario`) con `Authorization: Bearer <JWT>`.
+4. **Edición**: Crear/actualizar/borrar tareas y categorías mediante endpoints REST; Task Service valida la autoría con el **JWT**.
+
+* Cada servicio tiene su “capa de controladores” (HTTP) y “lógica” (reglas/validaciones).
+* Se comparte una única BD (patrón **DB-shared** entre microservicios); simple en local.
+* Contratos REST simples, formato JSON, y autenticación **Bearer JWT**.
+
+### Vista de Despliegue
+![Vista de Despliegue](docs/artifacts/deploy-vw.png "Vista de Despliegue")
+
+* **Host Local (localhost)** con **Docker Engine**.
+* Contenedores separados:
+
+  * `frontend-service` (Nginx sirviendo estáticos) **localhost:8083**.
+  * `auth-service` (Go) — p.ej. **localhost:8080**.
+  * `category-service` (Go) — p.ej. **localhost:8081**.
+  * `task-service` (Go) — p.ej. **localhost:8082**.
+  * `todolistapp-database` — **localhost:5432** (con volumen persistente).
+* **Red de Docker** compartida para que los servicios se resuelvan por nombre (ej.: `postgres:5432`).
+
+**Conexiones**
+
+* Web App → cada microservicio vía **HTTP/JSON** (puertos publicados al host).
+* Microservicios → **PostgreSQL** vía **SQL/TCP** (con `DATABASE_URL`).
+* Variables de entorno típicas:
+
+  * `DATABASE_URL=postgres://user:pass@postgres:5432/tododb?sslmode=disable`
+  * `JWT_SECRET=...`
+  * `MAX_UPLOAD_SIZE`, `DEFAULT_AVATAR_URL`, etc.
+
+### Diagrama Entidad-Relación
+![Diagrama Entidad-Relación](docs/artifacts/er-vw.png "Diagrama Entidad Relación")
+
+**Entidades**
+
+* **USUARIO**
+
+  * `id` (PK), `username` (único), `password_hash`, `avatar_path` (nullable), `created_at`.
+  * Reglas: `username` único; contraseña almacenada **hash** (bcrypt); si no hay `avatar_path`, se usa un avatar por defecto.
+
+* **CATEGORIA**
+
+  * `id` (PK), `name`, `description` (nullable), `created_at`.
+  * Reglas: nombre requerido; puedes añadir unicidad si lo deseas por usuario (si las categorías son personales) o global.
+
+* **TAREA**
+
+  * `id` (PK), `user_id` (FK→USUARIO), `category_id` (FK→CATEGORIA, **nullable** con `ON DELETE SET NULL`), `text`, `created_at`, `due_date` (nullable), `status`.
+  * `status` ∈ {`NOT_STARTED`, `STARTED`, `COMPLETED`} (puedes implementar como `CHECK` o enumeración de aplicación).
+  * Índices por `user_id` y `category_id` para filtros frecuentes.
+
+**Cardinalidades y comportamiento**
+
+* **USUARIO 1—N TAREA**: un usuario puede tener muchas tareas; `ON DELETE CASCADE` en `tasks.user_id` elimina sus tareas al borrar el usuario.
+* **CATEGORIA 1—N TAREA**: una categoría puede agrupar muchas tareas; `ON DELETE SET NULL` evita borrar tareas si se elimina la categoría (quedan sin categoría).
+
+### Flujo de Trabajo
+La aplicación está construida siguiendo una arquitectura de microservicios, donde cada servicio es responsable de una funcionalidad específica:
+
+1. **Auth Service (Puerto 8080)**: 
+   - Gestiona la autenticación y registro de usuarios
+   - Maneja tokens JWT para sesiones seguras
+   - Almacena y sirve avatares de usuario
+
+2. **Category Service (Puerto 8081)**:
+   - Gestiona las categorías de tareas
+   - Permite organizar tareas en grupos lógicos
+
+3. **Task Service (Puerto 8082)**:
+   - Maneja el CRUD completo de tareas
+   - Asocia tareas con usuarios y categorías
+
+4. **Frontend Service (Puerto 8083)**:
+   - Sirve la interfaz de usuario
+   - Interactúa con los demás servicios
+   - Proporciona una experiencia fluida al usuario
 
 ## Estructura del Repositorio
-
 ```
-├── go.mod                # Dependencias y configuración del módulo Go
-├── main.go               # Código fuente del backend (API REST en Golang)
-├── schema.sql            # Script de creación de la base de datos PostgreSQL
-├── index.html            # Página principal de la interfaz web
-├── style.css             # Estilos de la interfaz web
-├── script.js             # Lógica de la interfaz web (JavaScript)
-├── README.md             # Documentación del proyecto
+├── authService/           # Servicio de autenticación
+│   ├── config/           # Configuración de BD y variables de entorno
+│   ├── controllers/      # Controladores de login y registro
+│   ├── models/          # Modelo de usuario
+│   ├── services/        # Lógica de negocio de autenticación
+│   └── utils/           # Utilidades (hash, JWT, almacenamiento)
+├── categoryService/      # Servicio de gestión de categorías
+├── taskService/         # Servicio de gestión de tareas
+│   ├── controllers/     # Controladores de tareas
+│   ├── models/         # Modelo de tarea
+│   └── services/       # Lógica de negocio de tareas
+├── frontend/           # Interfaz de usuario
+│   ├── categories/     # Componentes de categorías
+│   └── tasks/         # Componentes de tareas
+└── database/          # Scripts de inicialización de BD
 ```
 
 ## Uso
 
-### Requisitos
-- Docker y Docker Compose instalados (configuración por definir en el futuro)
-- PostgreSQL
-- Go 1.22+
+### Requisitos Previos
+- Docker y Docker Compose
+- Espacio en disco para imágenes Docker
+- Puertos 8080-8083 disponibles
 
-### Despliegue local
+### Instrucciones de Ejecución
 
-1. Clona el repositorio:
-   ```bash
-   git clone <repo-url>
-   cd todo_app
-   ```
-2. Configura las variables de entorno en un archivo `.env` con los datos de conexión a PostgreSQL:
-   ```env
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=postgres
-   DB_PASSWORD=tu_password
-   DB_NAME=taskdb
-   ```
-3. Crea la base de datos y las tablas ejecutando el script `schema.sql` en tu instancia de PostgreSQL.
-4. Instala las dependencias de Go:
-   ```bash
-   go mod tidy
-   ```
-5. Ejecuta el backend:
-   ```bash
-   go run main.go
-   ```
-6. Abre `index.html` en tu navegador para acceder a la interfaz web.
+1. Clonar el repositorio:
+```bash
+git clone git@github.com:Carlos-Rodriguez98/toDoListApp.git
+cd toDoListApp
+```
 
-> **Nota:** En el futuro se añadirá un `Dockerfile` y/o `docker-compose.yml` para facilitar el despliegue.
+2. Iniciar los servicios con Docker Compose:
+```bash
+docker-compose up -d
+```
 
----
+3. Acceder a la aplicación:
+   - Frontend: http://localhost:8083
+   - Servicios API:
+     - Auth Service: http://localhost:8080
+     - Category Service: http://localhost:8081
+     - Task Service: http://localhost:8082
+
+### Variables de Entorno
+Cada servicio utiliza sus propias variables de entorno para configuración:
+
+- Base de datos:
+  - POSTGRES_USER=Admin
+  - POSTGRES_PASSWORD=Admin
+  - POSTGRES_DB=toDoListApp
+
+Los servicios se conectarán automáticamente a la base de datos usando las credenciales configuradas en el docker-compose.yml.
