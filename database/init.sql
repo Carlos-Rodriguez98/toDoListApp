@@ -44,7 +44,7 @@ INSERT INTO categorias (name, description, created_at) VALUES
 ('Salud', 'Actividades para mejorar hábitos', '2025-07-28 01:48:12'),
 ('Social/Ocio', 'Actividades de descanso', '2025-08-08 08:08:08'),
 ('Finanzas', 'Validaciones de mis finanzas', '2025-08-13 17:53:25'),
-('Hogar', 'Actividades para el apartamento', '2025-07-17 12:00:00'),
+('Hogar', 'Actividades para el apartamento', '2025-07-17 12:00:00')
 ON CONFLICT DO NOTHING;
 
 -- Definición tabla de de tareas
