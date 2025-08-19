@@ -17,7 +17,7 @@ services:
       - microservices
 
   auth-service:
-    build: ./authservice
+    build: ./authService
     container_name: auth-service
     restart: always
     environment:
@@ -32,7 +32,7 @@ services:
       - microservices
 
   category-service:
-    build: ./categoryservice
+    build: ./categoryService
     container_name: category-service
     restart: always
     environment:
