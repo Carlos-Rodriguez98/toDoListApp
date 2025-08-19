@@ -1,0 +1,66 @@
+version: '3.9'
+services:
+  todolistapp-database:
+    image: postgres:15
+    container_name: todolistapp-database
+    restart: always
+    environment:
+      POSTGRES_USER: Admin
+      POSTGRES_PASSWORD: Admin
+      POSTGRES_DB: toDoListApp
+    ports:
+      - "5432:5432"
+    volumes:
+      - user_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - microservices
+
+  auth-service:
+    build: ./authservice
+    container_name: auth-service
+    restart: always
+    environment:
+      - DB_URL="host=todolistapp-database user=Admin password=Admin dbname=toDoListApp port=5432 sslmode=disable"
+    depends_on:
+      - todolistapp-database
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./authService/static:/app/static
+    networks:
+      - microservices
+
+  category-service:
+    build: ./categoryservice
+    container_name: category-service
+    restart: always
+    environment:
+      - DB_URL="host=todolistapp-database user=Admin password=Admin dbname=toDoListApp port=5432 sslmode=disable"
+    depends_on:
+      - todolistapp-database
+    ports:
+      - "8081:8080"
+    networks:
+      - microservices
+
+  task-service:
+    build: ./taskService
+    container_name: task-service
+    depends_on:
+      - todolistapp-database
+    env_file:
+      - ./taskService/.env
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices
+
+
+volumes:
+  user_data:
+
+networks:
+  microservices:
+    driver: bridge
+    
