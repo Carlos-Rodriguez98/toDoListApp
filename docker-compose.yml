@@ -56,6 +56,14 @@ services:
     networks:
       - microservices
 
+  frontend-service:
+    build: ./frontend
+    container_name: frontend-service
+    restart: always
+    ports:
+      - "8083:80" # afuera 8083 -> adentro 80 (nginx)
+    networks:
+      - microservices
 
 volumes:
   user_data:
