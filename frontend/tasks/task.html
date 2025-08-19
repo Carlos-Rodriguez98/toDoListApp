@@ -1,0 +1,64 @@
+<h2>Tasks</h2>
+
+<div id="legend">
+    <div id="legend-item-legend-no">
+        <input type="checkbox" class="box"></input> No Started
+    </div>
+    <div id="legend-item-legend-started">
+        <input type="checkbox" class="box"></input> Started
+    </div>
+    <div id="legend-item-legend-ended">
+        <input type="checkbox" class="box"></input> Ended
+    </div>
+</div>
+
+<div id="add-task-bar">
+    <span class="plus">+</span>
+</div>
+
+<div id="task-list" class="task-list"></div>
+
+<div id="modal-task-overlay">
+    <div id="modal-task-content">
+        <span id="modal-task-close">&times;</span>
+        <h2>New Task</h2>
+
+        <label for="task-text">Description</label>
+        <textarea id="task-text" placeholder="Task description" rows="3"></textarea>
+
+        <label for="task-due">Due date</label>
+        <input type="datetime-local" id="task-due">
+
+        <label for="task-category">Category</label>
+        <select id="task-category">
+            <option value="">— No category —</option>
+        </select>
+
+        <button id="save-task">Save</button>
+    </div>
+</div>
+
+<div id="modal-edit-task-overlay">
+    <div id="modal-edit-task-content">
+        <span id="modal-edit-task-close">&times;</span>
+        <h2>Edit Task</h2>
+
+        <label for="edit-task-text">Description</label>
+        <textarea id="edit-task-text" rows="3" placeholder="Task description"></textarea>
+
+        <label for="edit-task-due">Due date</label>
+        <input type="datetime-local" id="edit-task-due">
+
+        <label for="edit-task-status">Status</label>
+        <select id="edit-task-status">
+            <option value="no_started">No started</option>
+            <option value="started">Started</option>
+            <option value="ended">Ended</option>
+        </select>
+
+        <div class="edit-task-buttons">
+            <button id="edit-task-save" disabled>Save</button>
+            <button id="edit-task-delete">Delete</button>
+        </div>
+    </div>
+</div>
