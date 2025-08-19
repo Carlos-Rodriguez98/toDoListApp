@@ -5,6 +5,7 @@
 - Jefferson Alberto Hernandez Garcia (ja.hernandezg1@uniandes.edu.co)
 - Valentin Charles Michel Pecqueux (v.pecqueux@uniandes.edu.co)
 - David Andres Paredes Bravo (da.paredes2@uniandes.edu.co)
+- Harold Nicolas Coca Peña (h.coca@uniandes.edu.co)
 
 ## Introducción
 To Do List App es una aplicación de gestión de tareas moderna y distribuida, construida con una arquitectura de microservicios. La aplicación permite a los usuarios gestionar sus tareas diarias de manera eficiente, organizándolas por categorías y manteniendo un seguimiento de su progreso.
