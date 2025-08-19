@@ -39,19 +39,12 @@ CREATE TABLE IF NOT EXISTS categorias(
 -- Insertar datos en la tabla de categorias
 INSERT INTO categorias (name, description, created_at) VALUES
 ('Trabajos', 'Trabajos universidad', '2025-07-17 12:00:00'),
-('Trabajos', 'Trabajos universidad', '2025-07-19 12:00:00'),
 ('Proyectos', 'Proyectos migración Apps Empresa', '2025-07-20 12:35:00'),
-('Hogar', '', '2025-07-17 12:01:22'),
 ('Estudio', 'Actividades de estudio', '2025-07-24 05:02:48'),
 ('Salud', 'Actividades para mejorar hábitos', '2025-07-28 01:48:12'),
-('Finanzas', 'Validaciones de mis finanzas', '2025-07-30 20:08:01'),
 ('Social/Ocio', 'Actividades de descanso', '2025-08-08 08:08:08'),
-('Estudio', 'Actividades de estudio matemáticas', '2025-08-10 10:12:00'),
 ('Finanzas', 'Validaciones de mis finanzas', '2025-08-13 17:53:25'),
 ('Hogar', 'Actividades para el apartamento', '2025-07-17 12:00:00'),
-('Proyectos/creatividad', 'Creación de contenido', '2025-08-15 04:05:06'),
-('Estudio', '', '2025-07-17 12:00:00'),
-('Finanzas', '', '2025-08-17 17:17:17')
 ON CONFLICT DO NOTHING;
 
 -- Definición tabla de de tareas
