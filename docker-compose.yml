@@ -44,6 +44,19 @@ services:
     networks:
       - microservices
 
+  task-service:
+    build: ./taskService
+    container_name: task-service
+    depends_on:
+      - todolistapp-database
+    env_file:
+      - ./taskService/.env
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices
+
+
 volumes:
   user_data:
 
