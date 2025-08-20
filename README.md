@@ -203,7 +203,7 @@ POSTGRES_DB=toDoListApp
 
 3. Iniciar los servicios con Docker Compose:
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
 
 Los servicios se conectarán automáticamente a la base de datos usando las credenciales configuradas en el docker-compose.yml.
