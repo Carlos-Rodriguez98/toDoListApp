@@ -1,2 +1,4 @@
 authService/.env
 taskService/.env
+categoryService/.env
+database/.env

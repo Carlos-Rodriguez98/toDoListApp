@@ -1,6 +1,7 @@
 package main
 
 import (
+	"categoryService/config"
 	"fmt"
 	"net/http"
 	"time"
@@ -31,6 +32,10 @@ func (Categoria) TableName() string {
 }
 
 func main() {
+	//Inicializar configuraciones
+	//Variables de entorno
+	config.LoadEnv()
+
 	r := gin.Default()
 
 	// Middleware CORS (permite cualquier origen)
@@ -43,7 +48,7 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=America/Bogota", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=America/Bogota", config.AppConfig.DBHost, config.AppConfig.DBPort, config.AppConfig.DBUser, config.AppConfig.DBPassword, config.AppConfig.DBName)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
