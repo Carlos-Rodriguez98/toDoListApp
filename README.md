@@ -142,6 +142,11 @@ La aplicación está construida siguiendo una arquitectura de microservicios, do
    - Interactúa con los demás servicios
    - Proporciona una experiencia fluida al usuario
 
+## Referencia API (Postman)
+
+https://www.postman.com/team44-4822/team-workspace/collection/aki0iqe/todolistapp-api?action=share&source=copy-link&creator=47637136
+https://github.com/Carlos-Rodriguez98/toDoListApp/blob/main/ToDoListApp%20API.postman_collection.json
+
 ## Estructura del Repositorio
 ```
 ├── authService/           # Servicio de autenticación
