@@ -176,7 +176,7 @@ cd toDoListApp
 ```
 
 2. Definir variables de entorno:
-Cada servicio utiliza sus propias variables de entorno para configuración, p. ej. variables de entorno en `taskService/` y `authService/`:
+Cada servicio utiliza sus propias variables de entorno para configuración definidas en archivo .env. Variables de entorno en `authService/`, `categoryService/`, `taskService`:
 ```
 DB_HOST=todolistapp-database
 DB_PORT=5432
