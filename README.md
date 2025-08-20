@@ -176,24 +176,35 @@ git clone git@github.com:Carlos-Rodriguez98/toDoListApp.git
 cd toDoListApp
 ```
 
-2. Iniciar los servicios con Docker Compose:
-```bash
-docker-compose up -d
+2. Definir variables de entorno:
+Cada servicio utiliza sus propias variables de entorno para configuración, p. ej. variables de entorno en `taskService/` y `authService/`:
+```
+DB_HOST=todolistapp-database
+DB_PORT=5432
+DB_USER=Admin
+DB_PASSWORD=Admin
+DB_NAME=toDoListApp
+PORT=8080
+JWT_SECRET=clavesecreta
 ```
 
-3. Acceder a la aplicación:
+Variables de entorno en `database/`:
+```
+POSTGRES_USER=Admin
+POSTGRES_PASSWORD=Admin
+POSTGRES_DB=toDoListApp
+```
+
+3. Definir puertos de acceso:
    - Frontend: http://localhost:8083
    - Servicios API:
      - Auth Service: http://localhost:8080
      - Category Service: http://localhost:8081
      - Task Service: http://localhost:8082
 
-### Variables de Entorno
-Cada servicio utiliza sus propias variables de entorno para configuración:
-
-- Base de datos:
-  - POSTGRES_USER=Admin
-  - POSTGRES_PASSWORD=Admin
-  - POSTGRES_DB=toDoListApp
+3. Iniciar los servicios con Docker Compose:
+```bash
+docker-compose up -d
+```
 
 Los servicios se conectarán automáticamente a la base de datos usando las credenciales configuradas en el docker-compose.yml.
