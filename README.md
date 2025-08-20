@@ -177,7 +177,7 @@ cd toDoListApp
 ```
 
 2. Definir variables de entorno:
-Cada servicio utiliza sus propias variables de entorno para configuración, p. ej. variables de entorno en `taskService/` y `authService/`:
+Cada servicio utiliza sus propias variables de entorno para configuración definidas en archivo .env. Variables de entorno en `authService/`, `categoryService/`, `taskService`:
 ```
 DB_HOST=todolistapp-database
 DB_PORT=5432
@@ -204,7 +204,7 @@ POSTGRES_DB=toDoListApp
 
 3. Iniciar los servicios con Docker Compose:
 ```bash
-docker-compose up -d
+docker-compose up --build
 ```
 
 Los servicios se conectarán automáticamente a la base de datos usando las credenciales configuradas en el docker-compose.yml.
