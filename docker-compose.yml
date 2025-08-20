@@ -4,10 +4,8 @@ services:
     image: postgres:15
     container_name: todolistapp-database
     restart: always
-    environment:
-      POSTGRES_USER: Admin
-      POSTGRES_PASSWORD: Admin
-      POSTGRES_DB: toDoListApp
+    env_file:
+      - ./database/.env
     ports:
       - "5432:5432"
     volumes:
@@ -17,11 +15,11 @@ services:
       - microservices
 
   auth-service:
-    build: ./authservice
+    build: ./authService
     container_name: auth-service
     restart: always
-    environment:
-      - DB_URL="host=todolistapp-database user=Admin password=Admin dbname=toDoListApp port=5432 sslmode=disable"
+    env_file:
+      - ./authService/.env
     depends_on:
       - todolistapp-database
     ports:
@@ -32,11 +30,11 @@ services:
       - microservices
 
   category-service:
-    build: ./categoryservice
+    build: ./categoryService
     container_name: category-service
     restart: always
-    environment:
-      - DB_URL="host=todolistapp-database user=Admin password=Admin dbname=toDoListApp port=5432 sslmode=disable"
+    env_file:
+      - ./categoryService/.env
     depends_on:
       - todolistapp-database
     ports:
