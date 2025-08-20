@@ -1,0 +1,206 @@
+#categories {
+  flex: 1;
+  background: #f5f5f5;
+  padding: 20px;
+  text-align: center;
+  overflow-y: auto;
+}
+
+#add-category {
+  width: 100%;
+  padding: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  border: 1px solid #808080;
+  background-color: #80808025;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #808080;
+}
+
+#add-category:hover {
+  background-color: #ccc;
+}
+
+#category-list {
+  box-sizing: border-box;
+  padding-bottom: 70px;
+}
+
+.category {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(173, 215, 255, 0.24);
+  border: 1px solid #005EFF;
+  padding: 10px;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.category-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.category input[type="checkbox"] {
+  min-width: 24px;
+  min-height: 24px;
+  max-width: 24px;
+  max-height: 24px;
+}
+
+.category label {
+  font-size: 18px;
+  font-weight: bold;
+  color: #005EFF;
+}
+
+.delete-category {
+  display: none;
+  cursor: pointer;
+  font-size: 18px;       
+  font-weight: bold;
+  color: #808080;
+  line-height: 1;        
+  transform: scale(1.3);
+  flex-shrink: 0;
+  margin-left: 15px;
+}
+
+.category:hover .delete-category {
+  display: inline;
+}
+
+
+
+/* Modal Add Category */
+
+
+
+#modal-category-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+}
+
+#modal-category-content {
+  position: relative;
+  background: white;
+  margin: 10% auto;
+  padding: 30px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#modal-category-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+#modal-category-content label {
+  align-self: flex-start;
+  margin-top: 20px;
+}
+
+#modal-category-content input, textarea {
+  width: 100%;           
+  padding: 10px;          
+  margin-top: 5px; 
+}
+
+#modal-category-content button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px 0px;
+  background-color: #333;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#modal-category-content button:hover {
+  background-color: rgb(0, 0, 0)
+}
+
+
+
+/* Modal Delete Category */
+
+
+
+#modal-delete-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1100;
+}
+
+#modal-delete-content {
+  position: relative;
+  background: white;
+  margin: 15% auto;
+  padding: 30px;
+  width: 400px;
+  text-align: center;
+}
+
+#modal-delete-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 30px;
+  cursor: pointer;
+}
+
+#modal-delete-content p {
+  margin: 20px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.modal-delete-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#confirm-delete {
+  flex: 1;
+  margin-right: 10px;
+  padding: 10px;
+  background-color: #c62828;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#confirm-delete:hover {
+  background-color: #b71c1c;
+}
+
+#cancel-delete {
+  flex: 1;
+  margin-left: 10px;
+  padding: 10px;
+  background-color: #333;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+}
+
+#cancel-delete:hover {
+  background-color: rgb(0, 0, 0)
+}
